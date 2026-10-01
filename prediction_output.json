@@ -1,0 +1,159 @@
+{
+  "current_attack_probability": 0.4796,
+  "current_severity": "MEDIUM",
+  "future_attack_probabilities": [
+    0.4796,
+    0.4801,
+    0.4816,
+    0.4823,
+    0.4817
+  ],
+  "risk_timeline": [
+    {
+      "step": 0,
+      "time_offset_seconds": 0.0,
+      "label": "Current State S(t)",
+      "attack_probability": 0.4796,
+      "severity": "MEDIUM"
+    },
+    {
+      "step": 1,
+      "time_offset_seconds": 10,
+      "label": "+1 window (10s)",
+      "attack_probability": 0.4796,
+      "severity": "MEDIUM"
+    },
+    {
+      "step": 2,
+      "time_offset_seconds": 20,
+      "label": "+2 window (20s)",
+      "attack_probability": 0.4801,
+      "severity": "MEDIUM"
+    },
+    {
+      "step": 3,
+      "time_offset_seconds": 30,
+      "label": "+3 window (30s)",
+      "attack_probability": 0.4816,
+      "severity": "MEDIUM"
+    },
+    {
+      "step": 4,
+      "time_offset_seconds": 40,
+      "label": "+4 window (40s)",
+      "attack_probability": 0.4823,
+      "severity": "MEDIUM"
+    },
+    {
+      "step": 5,
+      "time_offset_seconds": 50,
+      "label": "+5 window (50s)",
+      "attack_probability": 0.4817,
+      "severity": "MEDIUM"
+    }
+  ],
+  "predicted_attack_stage": "Lateral Movement",
+  "confidence": 0.1874,
+  "mitre_attack_intelligence": {
+    "predicted_stage_id": 3,
+    "predicted_stage_name": "Lateral Movement",
+    "mitre_tactic_id": "TA0008",
+    "mitre_tactic_name": "Lateral Movement",
+    "confidence": 0.1874,
+    "techniques": [
+      {
+        "id": "T1021.002",
+        "name": "Remote Services: SMB/Windows Admin Shares",
+        "description": "Adversary utilizes SMB/RPC to navigate between internal subnet endpoints.",
+        "url": "https://attack.mitre.org/techniques/T1021/002/"
+      },
+      {
+        "id": "T1021.001",
+        "name": "Remote Services: Remote Desktop Protocol",
+        "description": "Adversary pivots across internal hosts using interactive graphical login sessions.",
+        "url": "https://attack.mitre.org/techniques/T1021/001/"
+      }
+    ],
+    "tactical_description": "Adversary has compromised an internal host and is actively pivoting east-west across internal subnets.",
+    "recommended_defensive_mitigation": "Implement internal micro-segmentation, restrict host-to-host SMB/RDP, quarantine source workstation.",
+    "key_indicators": [
+      "Internal host-to-host flow expansion",
+      "High internal destination IP diversity",
+      "Port 445/3389/22 traversal"
+    ],
+    "supporting_features": [
+      "outbound_bytes",
+      "inbound_bytes",
+      "avg_packet_size",
+      "ttl_mean"
+    ],
+    "disclaimer": "Model-derived predictive assessment; requires validation against host/endpoint telemetry.",
+    "stage_probabilities": {
+      "0": 0.1872,
+      "1": 0.1833,
+      "2": 0.1754,
+      "3": 0.1874,
+      "4": 0.1173,
+      "5": 0.1495
+    }
+  },
+  "top_contributing_features": [
+    {
+      "feature": "unique_dst_ips",
+      "attribution_score": 0.0012,
+      "direction": "positive (escalates risk)"
+    },
+    {
+      "feature": "avg_iat",
+      "attribution_score": -0.0006,
+      "direction": "negative (suppresses risk)"
+    },
+    {
+      "feature": "outbound_bytes",
+      "attribution_score": -0.0005,
+      "direction": "negative (suppresses risk)"
+    },
+    {
+      "feature": "unique_src_ips",
+      "attribution_score": 0.0005,
+      "direction": "positive (escalates risk)"
+    },
+    {
+      "feature": "unique_dst_ports",
+      "attribution_score": 0.0004,
+      "direction": "positive (escalates risk)"
+    }
+  ],
+  "temporal_window_attribution": [
+    {
+      "window_index": 0,
+      "label": "Window t-5",
+      "relative_influence": 0.073
+    },
+    {
+      "window_index": 1,
+      "label": "Window t-4",
+      "relative_influence": 0.218
+    },
+    {
+      "window_index": 2,
+      "label": "Window t-3",
+      "relative_influence": 0.2231
+    },
+    {
+      "window_index": 3,
+      "label": "Window t-2",
+      "relative_influence": 0.1678
+    },
+    {
+      "window_index": 4,
+      "label": "Window t-1",
+      "relative_influence": 0.13
+    },
+    {
+      "window_index": 5,
+      "label": "Current window t",
+      "relative_influence": 0.1881
+    }
+  ]
+}

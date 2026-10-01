@@ -1,0 +1,104 @@
+# AI World Model for Predictive Cyber Defence Configuration
+
+system:
+  name: "CyberWorldModel"
+  version: "1.0.0"
+  random_seed: 42
+  device: "cpu"  # "cuda" or "cpu"
+
+data:
+  window_size_seconds: 10  # Configurable: 5, 10, 30, 60
+  allowed_window_sizes: [5, 10, 30, 60]
+  sequence_length: 6       # Historical time steps (n)
+  prediction_horizon: 5    # Rollout steps (K)
+  train_split: 0.70
+  val_split: 0.15
+  test_split: 0.15
+  sample_data_path: "data/sample/sample_traffic.csv"
+  processed_dir: "data/processed"
+  raw_dir: "data/raw"
+
+features:
+  # The 20 core numerical features in Network State S(t)
+  state_features:
+    - "flow_count"
+    - "unique_src_ips"
+    - "unique_dst_ips"
+    - "unique_dst_ports"
+    - "tcp_ratio"
+    - "udp_ratio"
+    - "syn_rate"
+    - "ack_rate"
+    - "rst_rate"
+    - "fin_rate"
+    - "avg_packet_size"
+    - "avg_flow_duration"
+    - "avg_iat"
+    - "iat_variance"
+    - "retransmission_rate"
+    - "ttl_mean"
+    - "ttl_variance"
+    - "port_scan_score"
+    - "inbound_bytes"
+    - "outbound_bytes"
+
+model:
+  type: "lstm"  # "lstm" or "transformer"
+  state_dim: 20
+  hidden_dim: 64
+  latent_dim: 32
+  num_layers: 2
+  dropout: 0.15
+  num_stages: 6 # 0: Benign, 1: Reconnaissance, 2: Initial Access, 3: Lateral Movement, 4: C2, 5: Exfiltration
+
+training:
+  batch_size: 16
+  learning_rate: 0.002
+  weight_decay: 0.0001
+  epochs: 30
+  lambda_state: 1.0     # Weight for State Transition MSE loss
+  lambda_risk: 1.0      # Weight for Attack Risk BCE loss
+  lambda_stage: 0.75    # Weight for Attack Stage CrossEntropy loss
+  early_stopping_patience: 8
+  checkpoint_dir: "models/checkpoints"
+
+thresholds:
+  low: 0.30
+  medium: 0.60
+  high: 0.80
+
+attack_stages:
+  0:
+    name: "Benign / Normal"
+    mitre_tactic: "None"
+    technique_id: "None"
+    description: "Typical baseline enterprise network traffic"
+  1:
+    name: "Reconnaissance"
+    mitre_tactic: "TA0043 - Reconnaissance"
+    technique_id: "T1046 - Network Service Discovery"
+    description: "Active port scanning, host discovery, sweeping destination ports"
+  2:
+    name: "Initial Access"
+    mitre_tactic: "TA0001 - Initial Access"
+    technique_id: "T1190 - Exploit Public-Facing Application"
+    description: "Repeated connection attempts to vulnerable edge services or brute force"
+  3:
+    name: "Lateral Movement"
+    mitre_tactic: "TA0008 - Lateral Movement"
+    technique_id: "T1021 - Remote Services (SMB/RDP/SSH)"
+    description: "Internal host-to-host pivots, SMB/RPC probing between internal subnets"
+  4:
+    name: "Command and Control"
+    mitre_tactic: "TA0011 - Command and Control"
+    technique_id: "T1071 - Application Layer Protocol"
+    description: "Periodic beaconing, low-variance IAT to external control IPs"
+  5:
+    name: "Exfiltration"
+    mitre_tactic: "TA0010 - Exfiltration"
+    technique_id: "T1048 - Exfiltration Over Alternative Protocol"
+    description: "Abnormal surge in outbound bytes, large single-direction transfers"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
